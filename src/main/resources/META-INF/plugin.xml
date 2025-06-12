@@ -1,0 +1,44 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.denshlk.collapse-files</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Collapse Files</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://github.com/denshlk">Denis Shulakov</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+        Reduces scrolling in large projects by collapsing unused folders and files into single entries.
+        <br><br>
+        Key features:
+        <ul>
+            <li>Groups consecutive unused folders (e.g., "&lt;30 collapsed folders&gt;")</li>
+            <li>Groups consecutive unused files (e.g., "&lt;15 collapsed files&gt;")</li>
+            <li>Keeps open files and their parent folders always visible</li>
+            <li>Click collapsed entries to expand and view all items</li>
+        </ul>
+        <br>
+        Navigate directly between active content without scrolling through unused project files.
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        
+        <applicationService 
+            serviceImplementation="com.denshlk.collapsefolders.CollapseFoldersSettings"/>
+
+        <treeStructureProvider order="last"
+                               implementation="com.denshlk.collapsefolders.CollapseFilesTreeStructureProvider"/>
+    </extensions>
+</idea-plugin>
