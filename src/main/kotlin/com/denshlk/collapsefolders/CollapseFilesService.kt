@@ -1,5 +1,6 @@
 package com.denshlk.collapsefolders
 
+import com.intellij.credentialStore.createSecureRandom
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
@@ -18,13 +19,14 @@ import com.intellij.openapi.wm.WindowManager
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import java.util.Comparator
+import java.util.UUID
 import javax.swing.JComponent
 
 @Service(Service.Level.PROJECT)
 class CollapseFilesService(private val project: Project) {
     val openFilesTracker = OpenFilesTracker(project)
 
-    // TODO: Periodic cleanup
+    // cleaned on loosing focus
     private val expandedNodes = mutableSetOf<String>()
 
     companion object {
@@ -67,13 +69,12 @@ class CollapseFilesService(private val project: Project) {
     }
 
     private fun loadCurrentlyOpenFiles() {
-        LOG.info("Loading currently open files on startup")
+        LOG.debug("Loading currently open files on startup")
         val fileEditorManager = FileEditorManager.getInstance(project)
         val openFiles = fileEditorManager.openFiles
 
-        LOG.info("Found ${openFiles.size} currently open files")
+        LOG.debug("Found ${openFiles.size} currently open files")
         openFiles.forEach { file ->
-            LOG.info("Processing already open file: ${file.path}")
             // Simulate file opening to update tracker
             openFilesTracker.fileOpened(fileEditorManager, file)
         }
@@ -95,14 +96,14 @@ class CollapseFilesService(private val project: Project) {
                         override fun focusGained(e: FocusEvent?) {}
 
                         override fun focusLost(e: FocusEvent?) {
-                            LOG.info("Project view lost focus, rebuilding project view")
+                            LOG.debug("Project view lost focus, rebuilding project view")
                             expandedNodes.clear()
                             refreshProjectView()
                         }
                     })
-                    LOG.info("Successfully added focus listener to project view tree")
+                    LOG.debug("Successfully added focus listener to project view tree")
                 } else {
-                    LOG.info("Project view pane not available yet, will retry later")
+                    LOG.warn("Project view pane not available yet, will retry later")
                 }
             } catch (e: Exception) {
                 LOG.warn("Could not set up project view focus tracking: ${e.message}")
@@ -111,11 +112,11 @@ class CollapseFilesService(private val project: Project) {
     }
 
     private fun refreshProjectView() {
-        LOG.info("Refreshing project view from service")
+        LOG.debug("Refreshing project view from service")
         ApplicationManager.getApplication().invokeLater {
             val projectView = ProjectView.getInstance(project)
             projectView.currentProjectViewPane?.updateFromRoot(true)
-            LOG.info("Service project view refresh completed")
+            LOG.debug("Service project view refresh completed")
         }
     }
 
@@ -129,13 +130,13 @@ class CollapseFilesService(private val project: Project) {
             val projectViewPane = projectView.currentProjectViewPane
 
             if (projectViewPane is AbstractProjectViewPane) {
-                LOG.info("Successfully retrieved comparator from project view pane")
+                LOG.debug("Successfully retrieved comparator from project view pane")
                 // Hacky hack, method is protected
                 val method = AbstractProjectViewPane::class.java.getDeclaredMethod("createComparator")
                 method.isAccessible = true
                 method.invoke(projectViewPane) as Comparator<NodeDescriptor<*>>
             } else {
-                LOG.info("Project view pane is not available or not an AbstractProjectViewPane")
+                LOG.warn("Project view pane is not available or not an AbstractProjectViewPane")
                 null
             }
         } catch (e: Exception) {
@@ -151,10 +152,10 @@ class CollapseFilesService(private val project: Project) {
     fun setNodeExpanded(nodeKey: String, expanded: Boolean) {
         if (expanded) {
             expandedNodes.add(nodeKey)
-            LOG.info("Node expanded: $nodeKey")
+            LOG.debug("Node expanded: $nodeKey")
         } else {
             expandedNodes.remove(nodeKey)
-            LOG.info("Node collapsed: $nodeKey")
+            LOG.debug("Node collapsed: $nodeKey")
         }
     }
 
@@ -165,6 +166,8 @@ class CollapseFilesService(private val project: Project) {
             val from = collapsedItems.first().virtualFile?.path ?: ""
             val to = collapsedItems.last().virtualFile?.path ?: ""
             items = "${from}...${to}"
+        } else {
+            LOG.warn("Collapsing node without any items")
         }
         return "${itemType.displayName}_$items"
     }

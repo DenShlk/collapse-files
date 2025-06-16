@@ -22,21 +22,19 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
     }
 
     override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
-        LOG.info("File opened: ${file.path}")
+        LOG.debug("File opened: ${file.path}")
         ascendFilePath(file) { file ->
             openFiles.add(file)
         }
         refreshProjectView()
-        LOG.info("Total open files: ${openFiles.size}")
     }
 
     override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-        LOG.info("File closed: ${file.path}")
+        LOG.debug("File closed: ${file.path}")
         ascendFilePath(file) { file ->
             openFiles.remove(file)
         }
         refreshProjectView()
-        LOG.info("Total open files: ${openFiles.size}")
     }
 
     private fun ascendFilePath(file: VirtualFile, iter: (VirtualFile) -> Unit) {
@@ -49,17 +47,17 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
     
     fun isFileOpen(file: VirtualFile): Boolean {
         val isOpen = openFiles.contains(file)
-        LOG.info("Checking if file is open: ${file.path} -> $isOpen")
+        LOG.debug("Checking if file is open: ${file.path} -> $isOpen")
         return isOpen
     }
     
     private fun refreshProjectView() {
         // TODO: need to rethink if we need to do full refresh for each file change (may be make it incremental?)
-        LOG.info("Refreshing project view")
+        LOG.debug("Refreshing project view")
         ApplicationManager.getApplication().invokeLater {
             val projectView = ProjectView.getInstance(project)
             projectView.currentProjectViewPane?.updateFromRoot(true)
-            LOG.info("Project view refresh completed")
+            LOG.debug("Project view refresh completed")
         }
     }
 } 

@@ -33,12 +33,12 @@ class CollapseFoldersSettings : PersistentStateComponent<CollapseFoldersSettings
     }
     
     override fun getState(): State {
-        LOG.info("Getting settings state: folderEnabled=${settings.folderCollapseEnabled}, fileEnabled=${settings.fileCollapseEnabled}, folderThreshold=${settings.folderCollapseThreshold}, fileThreshold=${settings.fileCollapseThreshold}")
+        LOG.debug("Getting settings state: folderEnabled=${settings.folderCollapseEnabled}, fileEnabled=${settings.fileCollapseEnabled}, folderThreshold=${settings.folderCollapseThreshold}, fileThreshold=${settings.fileCollapseThreshold}")
         return settings
     }
     
     override fun loadState(state: State) {
-        LOG.info("Loading settings state: folderEnabled=${state.folderCollapseEnabled}, fileEnabled=${state.fileCollapseEnabled}, folderThreshold=${state.folderCollapseThreshold}, fileThreshold=${state.fileCollapseThreshold}")
+        LOG.debug("Loading settings state: folderEnabled=${state.folderCollapseEnabled}, fileEnabled=${state.fileCollapseEnabled}, folderThreshold=${state.folderCollapseThreshold}, fileThreshold=${state.fileCollapseThreshold}")
         this.settings = state
     }
 } 

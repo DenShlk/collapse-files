@@ -34,7 +34,7 @@ class CollapsedItemsNode(
         val from = children.first().virtualFile?.name ?: "?"
         val to = children.last().virtualFile?.name ?: "?"
         val text = "$from ... $to (${children.size} ${itemType.displayName})"
-        LOG.info("Updating presentation for CollapsedItemsNode: $text")
+        LOG.debug("Updating presentation for CollapsedItemsNode: $text")
         presentation.presentableText = text
         presentation.setIcon(itemType.icon)
         presentation.tooltip = buildTooltip()
@@ -46,10 +46,10 @@ class CollapsedItemsNode(
 
     // Handle click to expand - this will cause TreeStructureProvider to show individual items instead of this node
     override fun navigate(requestFocus: Boolean) {
-        LOG.info("CollapsedItemsNode clicked: marking as expanded")
+        LOG.debug("CollapsedItemsNode clicked: marking as expanded")
         service.setNodeExpanded(key, true)
         projectView.currentProjectViewPane?.updateFromRoot(false)
-        LOG.info("Project view updated - TreeStructureProvider will now show individual items instead of collapsed node")
+        LOG.debug("Project view updated - TreeStructureProvider will now show individual items instead of collapsed node")
     }
 
     override fun contains(file: VirtualFile): Boolean {
