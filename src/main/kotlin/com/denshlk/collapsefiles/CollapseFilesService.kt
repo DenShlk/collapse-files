@@ -127,7 +127,14 @@ class CollapseFilesService(private val project: Project) {
                 // Hacky hack, method is protected
                 val method = AbstractProjectViewPane::class.java.getDeclaredMethod("createComparator")
                 method.isAccessible = true
-                method.invoke(projectViewPane) as Comparator<NodeDescriptor<*>>
+                val result = method.invoke(projectViewPane)
+                if (result is Comparator<*>) {
+                    @Suppress("UNCHECKED_CAST")
+                    result as Comparator<NodeDescriptor<*>>
+                } else {
+                    LOG.warn("Returned object is not a comparator")
+                    null
+                }
             } else {
                 LOG.warn("Project view pane is not available or not an AbstractProjectViewPane")
                 null
