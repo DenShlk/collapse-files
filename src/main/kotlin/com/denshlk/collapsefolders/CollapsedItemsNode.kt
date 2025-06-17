@@ -68,6 +68,7 @@ class CollapsedItemsNode(
         return children.firstOrNull()?.manualOrderKey ?: super.manualOrderKey
     }
 
+    @Suppress("UnstableApiUsage")
     override fun getSortOrder(settings: NodeSortSettings): NodeSortOrder {
         return children.firstOrNull()?.getSortOrder(settings) ?: super.getSortOrder(settings)
     }

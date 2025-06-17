@@ -6,16 +6,13 @@ import com.intellij.ide.projectView.impl.nodes.BasePsiNode
 import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode
 import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.vfs.VirtualFile
-import java.util.Comparator
 
 class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
 
     companion object {
-        private const val DEFAULT_COLLAPSE_THRESHOLD = 10
         private val LOG = Logger.getInstance(CollapseFilesTreeStructureProvider::class.java)
     }
 

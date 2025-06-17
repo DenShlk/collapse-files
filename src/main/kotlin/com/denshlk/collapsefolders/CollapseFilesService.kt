@@ -1,6 +1,9 @@
 package com.denshlk.collapsefiles
 
-import com.intellij.credentialStore.createSecureRandom
+import com.intellij.ide.projectView.ProjectView
+import com.intellij.ide.projectView.impl.AbstractProjectViewPane
+import com.intellij.ide.projectView.impl.nodes.BasePsiNode
+import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
@@ -9,18 +12,8 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootEvent
 import com.intellij.openapi.roots.ModuleRootListener
-import com.intellij.ide.projectView.ProjectView
-import com.intellij.ide.projectView.impl.nodes.BasePsiNode
-import com.intellij.ide.projectView.impl.AbstractProjectViewPane
-import com.intellij.ide.util.treeView.NodeDescriptor
-import com.intellij.ide.FrameStateListener
-import com.intellij.openapi.startup.StartupActivity
-import com.intellij.openapi.wm.WindowManager
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
-import java.util.Comparator
-import java.util.UUID
-import javax.swing.JComponent
 
 @Service(Service.Level.PROJECT)
 class CollapseFilesService(private val project: Project) {

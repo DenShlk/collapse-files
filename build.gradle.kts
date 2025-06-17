@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.nio.charset.Charset
 
 plugins {
     id("java")
