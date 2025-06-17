@@ -17,8 +17,8 @@
         <br><br>
         Key features:
         <ul>
-            <li>Groups consecutive unused folders (e.g., "&lt;30 collapsed folders&gt;")</li>
-            <li>Groups consecutive unused files (e.g., "&lt;15 collapsed files&gt;")</li>
+            <li>Groups consecutive unused folders</li>
+            <li>Groups consecutive unused files</li>
             <li>Keeps open files and their parent folders always visible</li>
             <li>Click collapsed entries to expand and view all items</li>
         </ul>

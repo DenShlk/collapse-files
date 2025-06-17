@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.nio.charset.Charset
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
@@ -5,7 +8,7 @@ plugins {
 }
 
 group = "com.denshlk"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -40,8 +43,19 @@ intellijPlatform {
       - Collapse sequences of unused folders and files in project view
       - Keep open files and their parent folders always visible
       - Click to expand/collapse grouped items
-      - Configurable thresholds for collapsing
     """.trimIndent()
+    }
+
+    signing {
+        val certificateChainText = File("secrets/chain.crt").readText(Charsets.UTF_8)
+        val privateKeyText = File("secrets/private.pem").readText(Charsets.UTF_8)
+        certificateChain.set(certificateChainText)
+        privateKey.set(privateKeyText)
+        password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
+    }
+
+    publishing {
+        token.set(providers.environmentVariable("PUBLISH_TOKEN"))
     }
 }
 
@@ -52,6 +66,6 @@ tasks {
         targetCompatibility = "21"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
 }

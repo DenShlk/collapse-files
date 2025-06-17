@@ -2,7 +2,7 @@ Test project looks like this:
 
 ```text
 
-collapse-folders-playground/
+collapse-files-playground/
 ├── test1/
 │   ├── 1.txt
 │   ├── ...
