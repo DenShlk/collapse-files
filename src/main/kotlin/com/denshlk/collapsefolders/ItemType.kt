@@ -1,4 +1,4 @@
-package com.denshlk.collapsefolders
+package com.denshlk.collapsefiles
 
 import com.intellij.icons.AllIcons
 import javax.swing.Icon

@@ -36,9 +36,9 @@
     <extensions defaultExtensionNs="com.intellij">
         
         <applicationService 
-            serviceImplementation="com.denshlk.collapsefolders.CollapseFoldersSettings"/>
+            serviceImplementation="com.denshlk.collapsefiles.CollapseFilesSettings"/>
 
         <treeStructureProvider order="last"
-                               implementation="com.denshlk.collapsefolders.CollapseFilesTreeStructureProvider"/>
+                               implementation="com.denshlk.collapsefiles.CollapseFilesTreeStructureProvider"/>
     </extensions>
 </idea-plugin>

@@ -1,4 +1,4 @@
-package com.denshlk.collapsefolders
+package com.denshlk.collapsefiles
 
 import com.intellij.credentialStore.createSecureRandom
 import com.intellij.openapi.application.ApplicationManager
@@ -38,7 +38,7 @@ class CollapseFilesService(private val project: Project) {
     }
 
     init {
-        LOG.info("Initializing CollapseFoldersService for project: ${project.name}")
+        LOG.info("Initializing CollapseFilesService for project: ${project.name}")
 
         // Load currently open files on startup
         loadCurrentlyOpenFiles()
@@ -65,7 +65,7 @@ class CollapseFilesService(private val project: Project) {
         // Set up project view focus tracking
         setupProjectViewFocusTracking()
 
-        LOG.info("CollapseFoldersService initialization completed")
+        LOG.info("CollapseFilesService initialization completed")
     }
 
     private fun loadCurrentlyOpenFiles() {

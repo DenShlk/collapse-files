@@ -1,4 +1,4 @@
-package com.denshlk.collapsefolders
+package com.denshlk.collapsefiles
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
@@ -9,10 +9,10 @@ import com.intellij.openapi.diagnostic.Logger
 
 @Service
 @State(
-    name = "CollapseFoldersSettings",
-    storages = [Storage("collapse-folders.xml")]
+    name = "CollapseFilesSettings",
+    storages = [Storage("collapse-files.xml")]
 )
-class CollapseFoldersSettings : PersistentStateComponent<CollapseFoldersSettings.State> {
+class CollapseFilesSettings : PersistentStateComponent<CollapseFilesSettings.State> {
     
     data class State(
         var folderCollapseEnabled: Boolean = true,
@@ -24,11 +24,11 @@ class CollapseFoldersSettings : PersistentStateComponent<CollapseFoldersSettings
     private var settings = State()
     
     companion object {
-        private val LOG = Logger.getInstance(CollapseFoldersSettings::class.java)
+        private val LOG = Logger.getInstance(CollapseFilesSettings::class.java)
         
-        fun getInstance(): CollapseFoldersSettings {
+        fun getInstance(): CollapseFilesSettings {
             return ApplicationManager.getApplication()
-                .getService(CollapseFoldersSettings::class.java)
+                .getService(CollapseFilesSettings::class.java)
         }
     }
     

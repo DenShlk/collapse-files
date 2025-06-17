@@ -1,4 +1,4 @@
-package com.denshlk.collapsefolders
+package com.denshlk.collapsefiles
 
 import com.intellij.ide.projectView.TreeStructureProvider
 import com.intellij.ide.projectView.ViewSettings
@@ -170,7 +170,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
     }
 
     private fun isCollapsingEnabled(): Boolean {
-        val settings = CollapseFoldersSettings.getInstance()
+        val settings = CollapseFilesSettings.getInstance()
         val state = settings.getState()
         val enabled = state.folderCollapseEnabled || state.fileCollapseEnabled
         LOG.debug("Collapsing enabled: $enabled (folders: ${state.folderCollapseEnabled}, files: ${state.fileCollapseEnabled})")
@@ -178,7 +178,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
     }
 
     private fun getCollapseThreshold(itemType: ItemType): Int {
-        val settings = CollapseFoldersSettings.getInstance()
+        val settings = CollapseFilesSettings.getInstance()
         val state = settings.getState()
         val threshold = when (itemType) {
             ItemType.FOLDER -> if (state.folderCollapseEnabled) state.folderCollapseThreshold else Int.MAX_VALUE

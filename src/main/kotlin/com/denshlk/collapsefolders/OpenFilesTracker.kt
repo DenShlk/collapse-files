@@ -1,4 +1,4 @@
-package com.denshlk.collapsefolders
+package com.denshlk.collapsefiles
 
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.application.ApplicationManager
