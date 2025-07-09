@@ -46,3 +46,4 @@ bin/
 .env
 /secrets/
 /tmp/
+/allure-results/
