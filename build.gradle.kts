@@ -1,9 +1,10 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    id("org.jetbrains.intellij.platform") version "2.6.0"
 }
 
 group = "com.denshlk"
@@ -11,9 +12,25 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
+    maven("https://www.jetbrains.com/intellij-repository/releases")
+    maven("https://www.jetbrains.com/intellij-repository/snapshots")
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     intellijPlatform {
         defaultRepositories()
     }
+}
+
+
+// Create integration test source set
+sourceSets {
+    create("integrationTest") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+val integrationTestImplementation by configurations.getting {
+    extendsFrom(configurations.implementation.get())
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -21,12 +38,30 @@ repositories {
 dependencies {
     intellijPlatform {
         create("IC", "2025.1")
-        testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
+//        testFramework(TestFrameworkType.Platform)
+        testFramework(TestFrameworkType.Starter)
 
         // Add necessary plugin dependencies for compilation here, example:
         // bundledPlugin("com.intellij.java")
         bundledPlugin("com.intellij.java")
     }
+
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+    integrationTestImplementation("org.junit.platform:junit-platform-launcher:1.12.2")
+    integrationTestImplementation("org.kodein.di:kodein-di-jvm:7.25.0")
+    integrationTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
+
+    // IntelliJ Starter Framework dependencies (exact versions from working uppercut project)
+    // should be like com.jetbrains.intellij.tools:ide-starter-driver:LATEST-EAP-SNAPSHOT
+    integrationTestImplementation("com.jetbrains.intellij.tools:ide-starter-squashed:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.tools:ide-starter-junit5:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.tools:ide-starter-driver:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.driver:driver-client:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.driver:driver-sdk:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.driver:driver-model:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.tools:ide-util-common:251.23774.435")
+    integrationTestImplementation("com.jetbrains.intellij.tools:ide-performance-testing-commands:251.23774.435")
 }
 
 intellijPlatform {
@@ -66,5 +101,17 @@ tasks {
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+    }
+
+    register<Test>("integrationTest") {
+        val integrationTestSourceSet = sourceSets.getByName("integrationTest")
+        testClassesDirs = integrationTestSourceSet.output.classesDirs
+        classpath = integrationTestSourceSet.runtimeClasspath
+        systemProperty("path.to.build.plugin", prepareSandbox.get().pluginDirectory.get().asFile)
+        useJUnitPlatform {
+            excludeEngines("junit-vintage")
+            includeEngines("junit-jupiter")
+        }
+        dependsOn(prepareSandbox)
     }
 }
