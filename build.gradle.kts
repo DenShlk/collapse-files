@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -78,6 +79,13 @@ intellijPlatform {
       - Keep open files and their parent folders always visible
       - Click to expand/collapse grouped items
     """.trimIndent()
+    }
+
+    pluginVerification {
+        ides {
+            ide(IntelliJPlatformType.PyCharmProfessional, "latest")
+            recommended()
+        }
     }
 
     signing {

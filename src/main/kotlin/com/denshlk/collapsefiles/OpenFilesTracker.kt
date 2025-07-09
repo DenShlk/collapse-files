@@ -7,6 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import java.nio.file.Path
 
 /*
 Tracks which files are open in editor.
@@ -15,44 +16,56 @@ TODO: https://plugins.jetbrains.com/docs/intellij/virtual-file.html#are-there-an
 For storing a large set of Virtual Files, use the dedicated VfsUtilCore.createCompactVirtualFileSet() method.
  */
 class OpenFilesTracker(private val project: Project) : FileEditorManagerListener {
-    private val openFileCounts = mutableMapOf<VirtualFile, Int>()
+    private val openPathCounts = mutableMapOf<Path, Int>()
 
     companion object {
         private val LOG = Logger.getInstance(OpenFilesTracker::class.java)
     }
 
-    override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
-        LOG.debug("File opened: ${file.path}")
-        ascendFilePath(file) { pathFile ->
-            openFileCounts[pathFile] = openFileCounts.getOrDefault(pathFile, 0) + 1
+    fun pathOpened(path: Path) {
+        LOG.debug("Path opened: $path")
+        ascendPath(path) { parentPath ->
+            openPathCounts[parentPath] = openPathCounts.getOrDefault(parentPath, 0) + 1
         }
         refreshProjectView()
     }
 
-    override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-        LOG.debug("File closed: ${file.path}")
-        ascendFilePath(file) { pathFile ->
-            val currentCount = openFileCounts.getOrDefault(pathFile, 0)
+    override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
+        pathOpened(file.toNioPath())
+    }
+
+    fun pathClosed(path: Path) {
+        LOG.debug("Path closed: $path")
+        ascendPath(path) { pathFile ->
+            val currentCount = openPathCounts.getOrDefault(pathFile, 0)
             if (currentCount <= 1) {
-                openFileCounts.remove(pathFile)
+                openPathCounts.remove(pathFile)
             } else {
-                openFileCounts[pathFile] = currentCount - 1
+                openPathCounts[pathFile] = currentCount - 1
             }
         }
         refreshProjectView()
     }
 
-    private fun ascendFilePath(file: VirtualFile, iter: (VirtualFile) -> Unit) {
-        var parent: VirtualFile? = file
+    fun fileClosed(file: VirtualFile) {
+        pathClosed(file.toNioPath())
+    }
+
+    override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
+        fileClosed(file)
+    }
+
+    private fun ascendPath(path: Path, iter: (Path) -> Unit) {
+        var parent: Path? = path
         while (parent != null) {
             iter(parent)
             parent = parent.parent
         }
     }
     
-    fun isFileOpen(file: VirtualFile): Boolean {
-        val isOpen = openFileCounts.containsKey(file)
-        LOG.debug("Checking if file is open: ${file.path} -> $isOpen")
+    fun isPathOpen(path: Path): Boolean {
+        val isOpen = openPathCounts.containsKey(path)
+        LOG.debug("Checking if file is open: $path -> $isOpen")
         return isOpen
     }
     

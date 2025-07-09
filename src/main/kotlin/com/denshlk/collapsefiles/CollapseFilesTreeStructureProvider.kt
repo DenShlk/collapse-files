@@ -115,7 +115,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
 
     private fun canCollapseItem(node: AbstractTreeNode<*>, openFilesTracker: OpenFilesTracker): Boolean {
         val file = getVirtualFile(node) ?: return false
-        val canCollapse = !openFilesTracker.isFileOpen(file)
+        val canCollapse = !openFilesTracker.isPathOpen(file.toNioPath())
         LOG.debug("Can collapse ${if (file.isDirectory) "folder" else "file"} '${file.name}': $canCollapse")
         return canCollapse
     }

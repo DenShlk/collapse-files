@@ -3,6 +3,7 @@ package com.denshlk.collapsefiles
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane
 import com.intellij.ide.projectView.impl.nodes.BasePsiNode
+import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
@@ -12,8 +13,13 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootEvent
 import com.intellij.openapi.roots.ModuleRootListener
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDirectory
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
+import javax.swing.event.TreeExpansionEvent
+import javax.swing.event.TreeExpansionListener
+import javax.swing.tree.DefaultMutableTreeNode
 
 @Service(Service.Level.PROJECT)
 class CollapseFilesService(private val project: Project) {
@@ -94,7 +100,27 @@ class CollapseFilesService(private val project: Project) {
                             refreshProjectView()
                         }
                     })
-                    LOG.debug("Successfully added focus listener to project view tree")
+
+                    // Add tree expansion listener to track folder expansion/collapse
+                    tree.addTreeExpansionListener(object : TreeExpansionListener {
+                        override fun treeExpanded(event: TreeExpansionEvent) {
+                            val virtualFile = getVirtualFileFromTreeEvent(event)
+                            if (virtualFile != null) {
+                                LOG.debug("Expanded manually: ${virtualFile.path}")
+                                openFilesTracker.pathOpened(virtualFile.toNioPath())
+                            }
+                        }
+
+                        override fun treeCollapsed(event: TreeExpansionEvent) {
+                            val virtualFile = getVirtualFileFromTreeEvent(event)
+                            if (virtualFile != null) {
+                                LOG.debug("Collapsed manually: ${virtualFile.path}")
+                                openFilesTracker.pathClosed(virtualFile.toNioPath())
+                            }
+                        }
+                    })
+
+                    LOG.debug("Successfully added focus and expansion listeners to project view tree")
                 } else {
                     LOG.warn("Project view pane not available yet, will retry later")
                 }
@@ -102,6 +128,25 @@ class CollapseFilesService(private val project: Project) {
                 LOG.warn("Could not set up project view focus tracking: ${e.message}")
             }
         }
+    }
+
+    private fun getVirtualFileFromTreeEvent(event: TreeExpansionEvent): VirtualFile? {
+        val path = event.path
+        // Iterate backwards from the end of the path
+        for (i in path.pathCount - 1 downTo 0) {
+            val component = path.getPathComponent(i)
+            if (component is DefaultMutableTreeNode) {
+                when (val userObject = component.userObject) {
+                    is CollapsedItemsNode -> return null // Ignore our custom nodes
+                    is PsiDirectoryNode -> return userObject.virtualFile
+                    is NodeDescriptor<*> -> {
+                        (userObject.element as? PsiDirectory)?.let { return it.virtualFile }
+                    }
+                }
+            }
+        }
+        LOG.warn("Could not get VirtualFile from any component in tree event path: ${path}")
+        return null
     }
 
     private fun refreshProjectView() {
