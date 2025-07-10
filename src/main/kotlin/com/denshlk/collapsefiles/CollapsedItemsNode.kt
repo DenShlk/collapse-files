@@ -26,11 +26,12 @@ class CollapsedItemsNode(
     }
 
     override fun update(presentation: PresentationData) {
-        val from = children.first().virtualFile?.name ?: "?"
-        val to = children.last().virtualFile?.name ?: "?"
-        val text = "$from ... $to (${children.size} ${itemType.displayName})"
-        LOG.debug("Updating presentation for CollapsedItemsNode: $text")
-        presentation.presentableText = text
+//        val from = children.first().virtualFile?.name ?: "?"
+//        val to = children.last().virtualFile?.name ?: "?"
+//        val text = "$from ... $to (${children.size} ${itemType.displayName})"
+//        LOG.debug("Updating presentation for CollapsedItemsNode: $text")
+        // use all names concatenation to allow quick search in project view
+        presentation.presentableText = children.joinToString("|") { it.virtualFile?.name.toString() }
         presentation.setIcon(itemType.icon)
         presentation.tooltip = buildTooltip()
     }
