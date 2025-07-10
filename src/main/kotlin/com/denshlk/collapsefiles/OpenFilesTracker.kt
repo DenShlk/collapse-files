@@ -7,6 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.toNioPathOrNull
 import java.nio.file.Path
 
 /*
@@ -38,7 +39,7 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
     }
 
     override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
-        pathOpened(file.toNioPath())
+        file.toNioPathOrNull()?.let { pathOpened(it) }
     }
 
     fun pathClosed(path: Path) {
@@ -59,7 +60,7 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
     }
 
     fun fileClosed(file: VirtualFile) {
-        pathClosed(file.toNioPath())
+        file.toNioPathOrNull()?.let { pathClosed(it) }
     }
 
     override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
