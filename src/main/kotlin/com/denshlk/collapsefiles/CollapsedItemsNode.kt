@@ -1,11 +1,6 @@
 package com.denshlk.collapsefiles
 
-import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.projectView.ProjectView
-import com.intellij.ide.projectView.ProjectViewNode
-import com.intellij.ide.projectView.ViewSettings
-import com.intellij.ide.projectView.NodeSortSettings
-import com.intellij.ide.projectView.NodeSortOrder
+import com.intellij.ide.projectView.*
 import com.intellij.ide.projectView.impl.nodes.BasePsiNode
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.diagnostic.Logger
@@ -18,13 +13,13 @@ class CollapsedItemsNode(
     parentNode: AbstractTreeNode<*>,
     viewSetting: ViewSettings,
 ) : ProjectViewNode<Any>(parentNode.project, key,  viewSetting) {
-
     private val service: CollapseFilesService = CollapseFilesService.getInstance(project)
     private val projectView: ProjectView = ProjectView.getInstance(project)
 
     companion object {
         private val LOG = Logger.getInstance(CollapsedItemsNode::class.java)
     }
+
     override fun getChildren(): Collection<AbstractTreeNode<*>> {
         // Collapsed nodes never show children - they get replaced by individual items when expanded
         return emptyList()
@@ -42,14 +37,18 @@ class CollapsedItemsNode(
 
     override fun canNavigate(): Boolean = true
     override fun canNavigateToSource(): Boolean = false
-    override fun isAlwaysLeaf(): Boolean = true
+    // need to show it like a collection to allow opening with 'enter' press
+    override fun isAlwaysLeaf(): Boolean = false
+    override fun isAlwaysShowPlus(): Boolean = true
+
+    fun setExpanded(value: Boolean) {
+        service.setNodeExpanded(key, value)
+        projectView.currentProjectViewPane?.updateFrom(parent.value, false, true)
+    }
 
     // Handle click to expand - this will cause TreeStructureProvider to show individual items instead of this node
     override fun navigate(requestFocus: Boolean) {
-        LOG.debug("CollapsedItemsNode clicked: marking as expanded")
-        service.setNodeExpanded(key, true)
-        projectView.currentProjectViewPane?.updateFromRoot(false)
-        LOG.debug("Project view updated - TreeStructureProvider will now show individual items instead of collapsed node")
+        setExpanded(true)
     }
 
     override fun contains(file: VirtualFile): Boolean {

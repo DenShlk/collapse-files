@@ -104,19 +104,25 @@ class CollapseFilesService(private val project: Project) {
                     // Add tree expansion listener to track folder expansion/collapse
                     tree.addTreeExpansionListener(object : TreeExpansionListener {
                         override fun treeExpanded(event: TreeExpansionEvent) {
-                            val virtualFile = getVirtualFileFromTreeEvent(event)
+                            val nodes = unpackTreeEvent(event)
+                            val virtualFile = nodes.first
+                            val collapsedNode = nodes.second
                             if (virtualFile != null) {
                                 LOG.debug("Expanded manually: ${virtualFile.path}")
                                 openFilesTracker.pathOpened(virtualFile.toNioPath())
                             }
+                            collapsedNode?.setExpanded(true)
                         }
 
                         override fun treeCollapsed(event: TreeExpansionEvent) {
-                            val virtualFile = getVirtualFileFromTreeEvent(event)
+                            val nodes = unpackTreeEvent(event)
+                            val virtualFile = nodes.first
+                            val collapsedNode = nodes.second
                             if (virtualFile != null) {
                                 LOG.debug("Collapsed manually: ${virtualFile.path}")
                                 openFilesTracker.pathClosed(virtualFile.toNioPath())
                             }
+                            collapsedNode?.setExpanded(false)
                         }
                     })
 
@@ -130,23 +136,23 @@ class CollapseFilesService(private val project: Project) {
         }
     }
 
-    private fun getVirtualFileFromTreeEvent(event: TreeExpansionEvent): VirtualFile? {
+    private fun unpackTreeEvent(event: TreeExpansionEvent): Pair<VirtualFile?, CollapsedItemsNode?> {
         val path = event.path
         // Iterate backwards from the end of the path
         for (i in path.pathCount - 1 downTo 0) {
             val component = path.getPathComponent(i)
             if (component is DefaultMutableTreeNode) {
                 when (val userObject = component.userObject) {
-                    is CollapsedItemsNode -> return null // Ignore our custom nodes
-                    is PsiDirectoryNode -> return userObject.virtualFile
+                    is CollapsedItemsNode -> return Pair(null, userObject) // Ignore our custom nodes
+                    is PsiDirectoryNode -> return Pair(userObject.virtualFile, null)
                     is NodeDescriptor<*> -> {
-                        (userObject.element as? PsiDirectory)?.let { return it.virtualFile }
+                        (userObject.element as? PsiDirectory)?.let { return Pair(it.virtualFile, null) }
                     }
                 }
             }
         }
-        LOG.warn("Could not get VirtualFile from any component in tree event path: ${path}")
-        return null
+        LOG.warn("Could not get VirtualFile from any component in tree event path: $path")
+        return Pair(null, null)
     }
 
     private fun refreshProjectView() {

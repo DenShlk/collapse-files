@@ -24,10 +24,17 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
 
     fun pathOpened(path: Path) {
         LOG.debug("Path opened: $path")
+        var needRefresh = false
         ascendPath(path) { parentPath ->
-            openPathCounts[parentPath] = openPathCounts.getOrDefault(parentPath, 0) + 1
+            val currentCount = openPathCounts.getOrDefault(parentPath, 0)
+            if (currentCount <= 0) {
+                needRefresh = true
+            }
+            openPathCounts[parentPath] = currentCount + 1
         }
-        refreshProjectView()
+        if (needRefresh) {
+            refreshProjectView()
+        }
     }
 
     override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
@@ -36,15 +43,19 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
 
     fun pathClosed(path: Path) {
         LOG.debug("Path closed: $path")
-        ascendPath(path) { pathFile ->
-            val currentCount = openPathCounts.getOrDefault(pathFile, 0)
+        var needRefresh = false
+        ascendPath(path) { parentFile ->
+            val currentCount = openPathCounts.getOrDefault(parentFile, 0)
             if (currentCount <= 1) {
-                openPathCounts.remove(pathFile)
+                openPathCounts.remove(parentFile)
+                needRefresh = true
             } else {
-                openPathCounts[pathFile] = currentCount - 1
+                openPathCounts[parentFile] = currentCount - 1
             }
         }
-        refreshProjectView()
+        if (needRefresh) {
+            refreshProjectView()
+        }
     }
 
     fun fileClosed(file: VirtualFile) {
@@ -70,7 +81,6 @@ class OpenFilesTracker(private val project: Project) : FileEditorManagerListener
     }
     
     private fun refreshProjectView() {
-        // TODO: need to rethink if we need to do full refresh for each file change (may be make it incremental?)
         LOG.debug("Refreshing project view")
         ApplicationManager.getApplication().invokeLater {
             val projectView = ProjectView.getInstance(project)

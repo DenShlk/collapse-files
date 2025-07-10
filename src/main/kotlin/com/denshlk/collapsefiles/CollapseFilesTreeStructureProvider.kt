@@ -23,12 +23,12 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
     ): Collection<AbstractTreeNode<*>> {
         val project = parent.project ?: return children
 
-        LOG.debug("=== Starting tree structure modification ===")
-        LOG.debug("Parent: ${getVirtualFile(parent)?.path ?: "unknown"}")
-        LOG.debug("Children count: ${children.size}")
+        LOG.info("=== Starting tree structure modification ===")
+        LOG.info("Parent: ${getVirtualFile(parent)?.path ?: "unknown"}")
+        LOG.info("Children count: ${children.size}")
 
         if (!isCollapsingEnabled()) {
-            LOG.debug("Collapsing is disabled, returning original children")
+            LOG.info("Collapsing is disabled, returning original children")
             return children
         }
 
@@ -62,7 +62,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
                 else -> null
             }
             if (currentItemType == null) {
-                LOG.debug("  -> Not a file or folder, flushing accumulated items and adding directly")
+                LOG.info("  -> Not a file or folder, flushing accumulated items and adding directly")
                 if (lastItemType != null) {
                     flushConsecutiveItems(consecutiveItems, result, lastItemType, parent, settings)
                 }
@@ -73,11 +73,11 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
             // cast
             child as BasePsiNode<*>
             val childFile = child.virtualFile
-            LOG.debug("Processing child: ${childFile?.name ?: "unknown"} (${childFile?.path ?: "no path"})")
+            LOG.info("Processing child: ${childFile?.name ?: "unknown"} (${childFile?.path ?: "no path"})")
 
             when {
                 currentItemType != lastItemType -> {
-                    LOG.debug("  -> Item type changed from $lastItemType to $currentItemType")
+                    LOG.info("  -> Item type changed from $lastItemType to $currentItemType")
                     if (lastItemType != null) {
                         flushConsecutiveItems(consecutiveItems, result, lastItemType, parent, settings)
                     }
@@ -90,10 +90,10 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
                 }
                 else -> {
                     if (canCollapseItem(child, service.openFilesTracker)) {
-                        LOG.debug("  -> Can collapse ${currentItemType.displayName}, adding to consecutive list")
+                        LOG.info("  -> Can collapse ${currentItemType.displayName}, adding to consecutive list")
                         consecutiveItems.add(child)
                     } else {
-                        LOG.debug("  -> Cannot collapse ${currentItemType.displayName}, flushing and adding directly")
+                        LOG.info("  -> Cannot collapse ${currentItemType.displayName}, flushing and adding directly")
                         flushConsecutiveItems(consecutiveItems, result, currentItemType, parent, settings)
                         result.add(child)
                     }
@@ -102,13 +102,13 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
         }
 
         // Flush any remaining items
-        LOG.debug("Flushing remaining accumulated items")
+        LOG.info("Flushing remaining accumulated items")
         if (lastItemType != null) {
             flushConsecutiveItems(consecutiveItems, result, lastItemType, parent, settings)
         }
 
-        LOG.debug("Final result count: ${result.size}")
-        LOG.debug("=== Tree structure modification completed ===")
+        LOG.info("Final result count: ${result.size}")
+        LOG.info("=== Tree structure modification completed ===")
 
         return result
     }
@@ -116,7 +116,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
     private fun canCollapseItem(node: AbstractTreeNode<*>, openFilesTracker: OpenFilesTracker): Boolean {
         val file = getVirtualFile(node) ?: return false
         val canCollapse = !openFilesTracker.isPathOpen(file.toNioPath())
-        LOG.debug("Can collapse ${if (file.isDirectory) "folder" else "file"} '${file.name}': $canCollapse")
+        LOG.info("Can collapse ${if (file.isDirectory) "folder" else "file"} '${file.name}': $canCollapse")
         return canCollapse
     }
 
@@ -128,7 +128,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
         viewSettings: ViewSettings
     ) {
         val threshold = getCollapseThreshold(itemType)
-        LOG.debug("Flushing ${items.size} consecutive ${itemType.displayName} items (threshold: $threshold)")
+        LOG.info("Flushing ${items.size} consecutive ${itemType.displayName} items (threshold: $threshold)")
 
         when {
             items.size >= threshold -> {
@@ -138,10 +138,10 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
                     val nodeKey = service.generateCollapsedNodeKey(items, itemType)
 
                     if (service.isNodeExpanded(nodeKey)) {
-                        LOG.debug("  -> Group is expanded, adding ${items.size} items individually")
+                        LOG.info("  -> Group is expanded, adding ${items.size} items individually")
                         result.addAll(items)
                     } else {
-                        LOG.debug("  -> Creating collapsed node for ${items.size} items")
+                        LOG.info("  -> Creating collapsed node for ${items.size} items")
                         val node = CollapsedItemsNode(nodeKey, items.toList(), itemType, parent, viewSettings)
                         result.add(node)
                     }
@@ -151,7 +151,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
             }
 
             items.isNotEmpty() -> {
-                LOG.debug("  -> Below threshold, adding ${items.size} items individually")
+                LOG.info("  -> Below threshold, adding ${items.size} items individually")
                 result.addAll(items)
             }
         }
@@ -170,7 +170,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
         val settings = CollapseFilesSettings.getInstance()
         val state = settings.getState()
         val enabled = state.folderCollapseEnabled || state.fileCollapseEnabled
-        LOG.debug("Collapsing enabled: $enabled (folders: ${state.folderCollapseEnabled}, files: ${state.fileCollapseEnabled})")
+        LOG.info("Collapsing enabled: $enabled (folders: ${state.folderCollapseEnabled}, files: ${state.fileCollapseEnabled})")
         return enabled
     }
 
@@ -181,7 +181,7 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
             ItemType.FOLDER -> if (state.folderCollapseEnabled) state.folderCollapseThreshold else Int.MAX_VALUE
             ItemType.FILE -> if (state.fileCollapseEnabled) state.fileCollapseThreshold else Int.MAX_VALUE
         }
-        LOG.debug("Collapse threshold for ${itemType.displayName}: $threshold")
+        LOG.info("Collapse threshold for ${itemType.displayName}: $threshold")
         return threshold
     }
 
