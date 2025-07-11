@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.denshlk"
-version = "1.1.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -73,11 +73,11 @@ intellijPlatform {
         }
 
         changeNotes = """
-      Initial version of Collapse Files plugin.
-      Features:
-      - Collapse sequences of unused folders and files in project view
-      - Keep open files and their parent folders always visible
-      - Click to expand/collapse grouped items
+      <ul>
+        <li>Uncollapse groups with enter</li>
+        <li>Group names now contain names of all items, allowing you to use quick search</li>
+        <li>We have integration tests!</li>
+      </ul>
     """.trimIndent()
     }
 
