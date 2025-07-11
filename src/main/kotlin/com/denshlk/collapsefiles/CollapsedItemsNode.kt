@@ -41,6 +41,7 @@ class CollapsedItemsNode(
     // need to show it like a collection to allow opening with 'enter' press
     override fun isAlwaysLeaf(): Boolean = false
     override fun isAlwaysShowPlus(): Boolean = true
+    override fun isAutoExpandAllowed(): Boolean = false
 
     fun setExpanded(value: Boolean) {
         service.setNodeExpanded(key, value)
@@ -98,12 +99,12 @@ class CollapsedItemsNode(
             node.virtualFile?.name ?: "?"
         }.take(5)
 
-        val tooltip = StringBuilder("Collapsed ${itemType.displayName}:")
+        val tooltip = StringBuilder("${children.size} Collapsed ${itemType.displayName}:")
         itemNames.forEach { name ->
-            tooltip.append("\n• $name")
+            tooltip.append(" • $name")
         }
         if (children.size > 5) {
-            tooltip.append("\n... and ${children.size - 5} more")
+            tooltip.append("...")
         }
         return tooltip.toString()
     }
