@@ -90,7 +90,7 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            ide(IntelliJPlatformType.PyCharmProfessional, "latest")
+            ide(IntelliJPlatformType.PyCharmProfessional, "2025.1.3")
             recommended()
         }
     }
