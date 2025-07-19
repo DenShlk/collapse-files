@@ -100,10 +100,6 @@ class CollapseFilesIntegrationTest {
         }
     }
 
-    private fun isPathVisible(tree: JTreeUiComponent, path: Array<String>): Boolean {
-        return tree.collectExpandedPaths().find {  path.toList() == it.path.drop(1) } != null
-    }
-
     private fun assertCollapsed(tree: JTreeUiComponent, parent: String, nodeTextPrefix: String) {
         assertTrue(tree.hasSubtext(nodeTextPrefix)) {
             "Collapsed node starting with '$nodeTextPrefix' not found under '$parent'"

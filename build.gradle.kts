@@ -9,7 +9,14 @@ plugins {
 }
 
 group = "com.denshlk"
-version = "1.2.0"
+version = "1.3.0"
+
+allprojects {
+    intellijPlatform {
+        // FIXME: hotfix for some issue with gradle, disable when possible to build without it
+        buildSearchableOptions = false
+    }
+}
 
 repositories {
     mavenCentral()

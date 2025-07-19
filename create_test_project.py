@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to create comprehensive test project structure for Collapse Files Plugin integration tests.
+Script to create test project structure for Collapse Files Plugin integration tests.
 Based on the test plan requirements.
 """
 
@@ -9,10 +9,10 @@ import shutil
 from pathlib import Path
 
 def create_test_project():
-    """Create the comprehensive test project structure."""
+    """Create the test project structure."""
     
     # Base directory for the test project
-    test_project_dir = Path("src/integrationTest/testData/comprehensive-test-project")
+    test_project_dir = Path("src/integrationTest/testData/test-project")
     
     # Remove existing test project if it exists
     if test_project_dir.exists():
@@ -78,15 +78,6 @@ def create_test_project():
     
     print(f"Created {below_threshold_dir} with 9 items")
     
-    # 5. Create open-file-scenarios/ directory with files that will be opened during tests
-    open_file_dir = test_project_dir / "open-file-scenarios"
-    open_file_dir.mkdir(exist_ok=True)
-    
-    (open_file_dir / "will-open1.txt").write_text("This file will be opened in Test 5")
-    (open_file_dir / "will-open2.txt").write_text("This file will also be opened in Test 5")
-    
-    print(f"Created {open_file_dir} with files for open file tests")
-    
     # 6. Create nested-structure/ directory for complex nesting tests
     nested_dir = test_project_dir / "nested-structure"
     nested_dir.mkdir(exist_ok=True)
@@ -100,48 +91,13 @@ def create_test_project():
     (level2_dir / "deep-file.txt").write_text("This is a deeply nested file")
     
     print(f"Created {nested_dir} with nested structure")
-    
-    # 7. Create a simple build.gradle.kts file to make it a valid Gradle project
-    build_gradle = test_project_dir / "build.gradle.kts"
-    build_gradle.write_text('''
-plugins {
-    kotlin("jvm") version "1.9.0"
-}
 
-repositories {
-    mavenCentral()
-}
+    # 7. Create new-file-scenario
+    new_file_scenario_dir = test_project_dir / "new-file-scenario"
+    new_file_scenario_dir.mkdir(exist_ok=True)
+    for i in range(11):
+        file_path = new_file_scenario_dir / f"
 
-dependencies {
-    testImplementation(kotlin("test"))
-}
-''')
-    
-    # 8. Create settings.gradle.kts
-    settings_gradle = test_project_dir / "settings.gradle.kts"
-    settings_gradle.write_text('rootProject.name = "comprehensive-test-project"')
-    
-    print(f"Created Gradle configuration files")
-    
-    # 9. Create a README.md for the test project
-    readme = test_project_dir / "README.md"
-    readme.write_text('''# Comprehensive Test Project
-
-This project is used for integration testing of the Collapse Files Plugin.
-
-## Structure
-
-- `many-folders/` - 15 folders for testing folder collapsing
-- `many-files/` - 15 files for testing file collapsing  
-- `mixed-scenario/` - Mixed files and folders
-- `below-threshold/` - 9 items (below default threshold)
-- `open-file-scenarios/` - Files that will be opened during tests
-- `nested-structure/` - Complex nesting for path preservation tests
-
-This structure is designed to test all scenarios outlined in the integration test plan.
-''')
-    
-    print(f"Test project structure created successfully!")
     print(f"Total directories created: {sum(1 for _ in test_project_dir.rglob('*') if _.is_dir())}")
     print(f"Total files created: {sum(1 for _ in test_project_dir.rglob('*') if _.is_file())}")
 

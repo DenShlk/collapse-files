@@ -44,18 +44,8 @@ scripts/
 This allows you to navigate the project a lot quicker.
 You can still view all the folders and files by clicking on their respective collapsed entries.
 
-## Requirements
-
-- All currently open files (and folders in their path) cannot be collapsed
-- Uncollapse folders/files when collapsed entry is clicked
-- Separate collapsed entries for folders and files (don't mix them in same collapsed node)
-
-## Tech stack
-
-- kotlin
-- gradle
-
-## Configuration (hardcode for now)
-
-- Enable/Disable folder/files collapsing
-- Collapse thresholds (10 by default)
+## Todo
+- [x] Logo
+- [ ] Settings:
+  - min number of files to collapse
+  - compact (file01.txt ... file09.txt) vs full collapsed node (file01.txt|file02.txt|+)

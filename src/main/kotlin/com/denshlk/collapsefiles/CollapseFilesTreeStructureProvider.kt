@@ -9,6 +9,7 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.toNioPathOrNull
 
 class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
 
@@ -115,7 +116,11 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
 
     private fun canCollapseItem(node: AbstractTreeNode<*>, openFilesTracker: OpenFilesTracker): Boolean {
         val file = getVirtualFile(node) ?: return false
-        val canCollapse = !openFilesTracker.isPathOpen(file.toNioPath())
+        val path = file.toNioPathOrNull()
+        if (path == null) {
+            return false
+        }
+        val canCollapse = !openFilesTracker.isPathOpen(path)
         LOG.info("Can collapse ${if (file.isDirectory) "folder" else "file"} '${file.name}': $canCollapse")
         return canCollapse
     }
