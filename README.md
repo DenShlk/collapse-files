@@ -44,8 +44,11 @@ scripts/
 This allows you to navigate the project a lot quicker.
 You can still view all the folders and files by clicking on their respective collapsed entries.
 
+## Settings
+Open Settings | Tools | Collapse Files to configure
+
 ## Todo
 - [x] Logo
-- [ ] Settings:
-  - min number of files to collapse
-  - compact (file01.txt ... file09.txt) vs full collapsed node (file01.txt|file02.txt|+)
+- [x] Settings
+  - [x] Thresholds for files and folders
+  - [x] Label style: compact vs full

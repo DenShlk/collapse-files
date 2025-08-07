@@ -47,3 +47,4 @@ bin/
 /secrets/
 /tmp/
 /allure-results/
+/.kotlin/

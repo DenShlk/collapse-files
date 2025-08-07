@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.denshlk"
-version = "1.3.1"
+version = "1.4.0"
 
 allprojects {
     intellijPlatform {
@@ -81,9 +81,8 @@ intellijPlatform {
 
         changeNotes = """
       <ul>
-        <li>Uncollapse groups with enter</li>
-        <li>Group names now contain names of all items, allowing you to use quick search</li>
-        <li>We have integration tests!</li>
+        <li>Settings page: enable/disable collapsing, thresholds for files and folders</li>
+        <li>Label style option: Compact (range) vs Full (all names) with examples</li>
       </ul>
     """.trimIndent()
     }

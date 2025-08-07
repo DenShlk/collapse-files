@@ -38,5 +38,12 @@
 
         <treeStructureProvider order="last"
                                implementation="com.denshlk.collapsefiles.CollapseFilesTreeStructureProvider"/>
+
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.denshlk.collapsefiles.CollapseFilesConfigurable"
+            id="com.denshlk.collapsefiles.settings"
+            displayName="Collapse Files"
+        />
     </extensions>
 </idea-plugin>

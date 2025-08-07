@@ -18,7 +18,8 @@ class CollapseFilesSettings : PersistentStateComponent<CollapseFilesSettings.Sta
         var folderCollapseEnabled: Boolean = true,
         var fileCollapseEnabled: Boolean = true,
         var folderCollapseThreshold: Int = 10,
-        var fileCollapseThreshold: Int = 10
+        var fileCollapseThreshold: Int = 10,
+        var compactCollapsedLabels: Boolean = false
     )
     
     private var settings = State()
@@ -33,12 +34,12 @@ class CollapseFilesSettings : PersistentStateComponent<CollapseFilesSettings.Sta
     }
     
     override fun getState(): State {
-        LOG.debug("Getting settings state: folderEnabled=${settings.folderCollapseEnabled}, fileEnabled=${settings.fileCollapseEnabled}, folderThreshold=${settings.folderCollapseThreshold}, fileThreshold=${settings.fileCollapseThreshold}")
+        LOG.debug("Getting settings state: folderEnabled=${settings.folderCollapseEnabled}, fileEnabled=${settings.fileCollapseEnabled}, folderThreshold=${settings.folderCollapseThreshold}, fileThreshold=${settings.fileCollapseThreshold}, compact=${settings.compactCollapsedLabels}")
         return settings
     }
     
     override fun loadState(state: State) {
-        LOG.debug("Loading settings state: folderEnabled=${state.folderCollapseEnabled}, fileEnabled=${state.fileCollapseEnabled}, folderThreshold=${state.folderCollapseThreshold}, fileThreshold=${state.fileCollapseThreshold}")
+        LOG.debug("Loading settings state: folderEnabled=${state.folderCollapseEnabled}, fileEnabled=${state.fileCollapseEnabled}, folderThreshold=${state.folderCollapseThreshold}, fileThreshold=${state.fileCollapseThreshold}, compact=${state.compactCollapsedLabels}")
         this.settings = state
     }
 } 
