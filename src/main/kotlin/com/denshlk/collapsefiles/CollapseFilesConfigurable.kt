@@ -10,6 +10,7 @@ import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 import javax.swing.JRadioButton
 import com.intellij.ui.components.JBLabel
+import javax.swing.ButtonGroup
 
 class CollapseFilesConfigurable : SearchableConfigurable, com.intellij.openapi.options.Configurable.NoScroll {
     private var panel: JPanel? = null
@@ -24,6 +25,10 @@ class CollapseFilesConfigurable : SearchableConfigurable, com.intellij.openapi.o
     private val labelStyleCompact =
         JRadioButton("Compact labels like 'file01.txt ... file04.txt (4 files)'. Warning: typing to navigate won't search in ommited names.")
     private val labelStyleFull = JRadioButton("Full labels like 'file01.txt|file02.txt|file03.txt|file04.txt'")
+    private val labelStyleGroup = ButtonGroup().apply {
+        add(labelStyleCompact)
+        add(labelStyleFull)
+    }
 
     override fun getId(): String = "com.denshlk.collapsefiles.settings"
 
@@ -98,7 +103,12 @@ class CollapseFilesConfigurable : SearchableConfigurable, com.intellij.openapi.o
         folderThreshold.value = state.folderCollapseThreshold
         fileThreshold.value = state.fileCollapseThreshold
 
-        if (state.compactCollapsedLabels) labelStyleCompact.isSelected = true else labelStyleFull.isSelected = true
+        labelStyleGroup.clearSelection()
+        if (state.compactCollapsedLabels) {
+            labelStyleCompact.isSelected = true
+        } else {
+            labelStyleFull.isSelected = true
+        }
 
         folderThreshold.isEnabled = enableFolderCollapse.isSelected
         fileThreshold.isEnabled = enableFileCollapse.isSelected
