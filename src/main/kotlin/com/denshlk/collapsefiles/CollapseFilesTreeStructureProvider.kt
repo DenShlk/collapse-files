@@ -24,6 +24,8 @@ class CollapseFilesTreeStructureProvider : TreeStructureProvider, DumbAware {
     ): Collection<AbstractTreeNode<*>> {
         val project = parent.project ?: return children
 
+        // We can do license check here, but IDE does it automatically (although rarely) so we don't care for now
+
         LOG.info("=== Starting tree structure modification ===")
         LOG.info("Parent: ${getVirtualFile(parent)?.path ?: "unknown"}")
         LOG.info("Children count: ${children.size}")

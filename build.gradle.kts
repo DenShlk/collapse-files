@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.denshlk"
-version = "1.4.1"
+version = "1.4.2"
 
 allprojects {
     intellijPlatform {
@@ -82,7 +82,7 @@ intellijPlatform {
         changeNotes = """
       Version ${version.get()}:
       <ul>
-        <li>Fixed style selection radio button</li>
+        <li>License preparations</li>
       </ul>
     """.trimIndent()
     }

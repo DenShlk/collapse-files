@@ -24,6 +24,10 @@
         Navigate directly between active content without scrolling through unused project files.
     ]]></description>
 
+    <!-- Required parameters for paid plugins.
+         Read more: https://plugins.jetbrains.com/docs/marketplace/add-required-parameters.html -->
+    <product-descriptor code="PCOLLAPSEFILES" release-date="20250809" release-version="14"/>
+
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
